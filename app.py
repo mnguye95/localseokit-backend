@@ -1,12 +1,16 @@
 import os
+import io
+from pkgutil import extend_path
 from helpers.geotag import set_latlng
-from flask import Flask, flash, request, redirect, render_template
+from flask import Flask, flash, request, redirect, render_template, send_file
 from werkzeug.utils import secure_filename
+import shutil
+
 
 app=Flask(__name__)
 
 app.secret_key = "secret key"
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
 # Get current path
 path = os.getcwd()
@@ -48,12 +52,30 @@ def upload_file():
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                set_latlng(os.path.join(app.config['UPLOAD_FOLDER'], filename), "San Mateo")
                 flash('{} successfully uploaded'.format(file.filename))
             else:
                 flash('{} is not allowed.'.format(file.filename.rsplit('.', 1)[1].lower()))
+        
+        file_path = ''
+        ext = '.jpg'
+        if len(files) > 1:
+            shutil.make_archive('geotagged', 'zip', app.config['UPLOAD_FOLDER'])
+            file_path = "geotagged.zip"
+            ext = '.zip'
+        else:
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(files[0].filename))
+        
+        return_data = io.BytesIO()
+        with open(file_path, 'rb') as fo:
+            return_data.write(fo.read())
+        # (after writing, cursor will be at last byte, so move it to start)
+        return_data.seek(0)
 
-        return redirect('/')
+        os.remove(file_path)
 
+        return send_file(return_data, mimetype='application/{}'.format('geotagged',ext),
+                        attachment_filename='{}{}'.format('geotagged',ext))
 
 if __name__ == "__main__":
-    app.run(host='127.0.0.1',port=5000,debug=False,threaded=True)
+    app.run(host='0.0.0.0',port=5000,debug=False,threaded=True)
