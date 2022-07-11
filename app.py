@@ -47,12 +47,15 @@ def upload_file():
             return redirect(request.url)
 
         files = request.files.getlist('files[]')
-
+        city = request.form.get("city")
+        file_paths = []
         for file in files:
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                set_latlng(os.path.join(app.config['UPLOAD_FOLDER'], filename), "San Mateo")
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+                file_paths.append(file_path)
+                set_latlng(file_path, city)
                 flash('{} successfully uploaded'.format(file.filename))
             else:
                 flash('{} is not allowed.'.format(file.filename.rsplit('.', 1)[1].lower()))
@@ -72,9 +75,11 @@ def upload_file():
         # (after writing, cursor will be at last byte, so move it to start)
         return_data.seek(0)
 
+        for p in file_paths:
+            os.remove(p)
         os.remove(file_path)
 
-        return send_file(return_data, mimetype='application/{}'.format('geotagged',ext),
+        return send_file(return_data, mimetype='application/{}'.format(secure_filename(files[0].filename),ext),
                         attachment_filename='{}{}'.format('geotagged',ext))
 
 if __name__ == "__main__":
