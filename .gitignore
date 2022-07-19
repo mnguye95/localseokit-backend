@@ -1,4 +1,5 @@
 uploads/
 env/
+local/
 __pycache__/
 geotagged.py
