@@ -35,7 +35,7 @@ jobs:
       - name : Print Completion Message
         run  : echo "CI Pipeline successfully completed."
 
-   CD-Pipeline:
+  CD-Pipeline:
     runs-on   : ubuntu-latest
     
     steps: 
