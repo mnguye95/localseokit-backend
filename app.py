@@ -9,7 +9,7 @@ import shutil
 
 app=Flask(__name__)
 
-app.secret_key = "secret key"
+app.secret_key = os.environ['FLASK_KEY']
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
 # Get current path
@@ -83,4 +83,4 @@ def upload_file():
                         attachment_filename='{}{}'.format('geotagged',ext))
 
 if __name__ == "__main__":
-    app.run(host='127.0.0.1',port=5000,debug=False,threaded=True)
+    app.run(debug=True)
