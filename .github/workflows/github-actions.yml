@@ -37,6 +37,7 @@ jobs:
 
   CD-Pipeline:
     runs-on   : ubuntu-latest
+    environment: python
     
     steps: 
       - name : Configure my AWS Credentials
