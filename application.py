@@ -84,4 +84,4 @@ def upload_file():
 
 if __name__ == "__main__":
     application.debug = True
-    application.run(port=80)
+    application.run(port=5000)
