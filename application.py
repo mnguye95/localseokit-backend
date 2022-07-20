@@ -49,6 +49,7 @@ def upload_file():
         files = request.files.getlist('files[]')
         city = request.form.get("city")
         file_paths = []
+        file_path = ''
         for file in files:
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
@@ -60,7 +61,6 @@ def upload_file():
             else:
                 flash('{} is not allowed.'.format(file.filename.rsplit('.', 1)[1].lower()))
         
-        file_path = ''
         ext = '.jpg'
         if len(files) > 1:
             shutil.make_archive('geotagged', 'zip', application.config['UPLOAD_FOLDER'])
