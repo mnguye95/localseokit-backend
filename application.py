@@ -7,10 +7,10 @@ from werkzeug.utils import secure_filename
 import shutil
 
 
-app =Flask(__name__)
+application =Flask(__name__)
 
-app.secret_key = os.environ['FLASK_KEY']
-app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
+application.secret_key = os.environ['FLASK_KEY']
+application.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
 # Get current path
 path = os.getcwd()
@@ -21,7 +21,7 @@ UPLOAD_FOLDER = os.path.join(path, 'uploads')
 if not os.path.isdir(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+application.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Allowed extension you can set your own
 ALLOWED_EXTENSIONS = set(['jpg', 'jpeg'])
@@ -33,12 +33,12 @@ def allowed_file(filename):
     return valid
 
 
-@app.route('/')
+@application.route('/')
 def upload_form():
     return render_template('upload.html')
 
 
-@app.route('/', methods=['POST'])
+@application.route('/', methods=['POST'])
 def upload_file():
     if request.method == 'POST':
 
@@ -52,9 +52,9 @@ def upload_file():
         for file in files:
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file_path = os.path.join(application.config['UPLOAD_FOLDER'], filename)
                 file.save(file_path)
-                file_paths.append(file_path)
+                file_paths.applicationend(file_path)
                 set_latlng(file_path, city)
                 flash('{} successfully uploaded'.format(file.filename))
             else:
@@ -63,11 +63,11 @@ def upload_file():
         file_path = ''
         ext = '.jpg'
         if len(files) > 1:
-            shutil.make_archive('geotagged', 'zip', app.config['UPLOAD_FOLDER'])
+            shutil.make_archive('geotagged', 'zip', application.config['UPLOAD_FOLDER'])
             file_path = "geotagged.zip"
             ext = '.zip'
         else:
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(files[0].filename))
+            file_path = os.path.join(application.config['UPLOAD_FOLDER'], secure_filename(files[0].filename))
         
         return_data = io.BytesIO()
         with open(file_path, 'rb') as fo:
@@ -79,8 +79,8 @@ def upload_file():
             os.remove(p)
         os.remove(file_path)
 
-        return send_file(return_data, mimetype='application/{}'.format(secure_filename(files[0].filename),ext),
+        return send_file(return_data, mimetype='applicationlication/{}'.format(secure_filename(files[0].filename),ext),
                         attachment_filename='{}{}'.format('geotagged',ext))
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    application.run(debug=True)
