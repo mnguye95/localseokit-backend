@@ -9,7 +9,7 @@ import shutil
 
 application = Flask(__name__)
 
-application.secret_key = os.environ['FLASK_KEY']
+application.secret_key = 'some key for now'
 application.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
 # Get current path
