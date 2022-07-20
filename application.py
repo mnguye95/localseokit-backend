@@ -54,7 +54,7 @@ def upload_file():
                 filename = secure_filename(file.filename)
                 file_path = os.path.join(application.config['UPLOAD_FOLDER'], filename)
                 file.save(file_path)
-                file_paths.applicationend(file_path)
+                file_paths.append(file_path)
                 set_latlng(file_path, city)
                 flash('{} successfully uploaded'.format(file.filename))
             else:
@@ -79,8 +79,9 @@ def upload_file():
             os.remove(p)
         os.remove(file_path)
 
-        return send_file(return_data, mimetype='applicationlication/{}'.format(secure_filename(files[0].filename),ext),
+        return send_file(return_data, mimetype='application/{}'.format(secure_filename(files[0].filename),ext),
                         attachment_filename='{}{}'.format('geotagged',ext))
 
 if __name__ == "__main__":
-    application.run(debug=True)
+    application.debug = True
+    application.run()
