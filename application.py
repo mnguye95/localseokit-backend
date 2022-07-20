@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 import shutil
 
 
-application =Flask(__name__)
+application = Flask(__name__)
 
 application.secret_key = os.environ['FLASK_KEY']
 application.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
