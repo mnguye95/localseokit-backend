@@ -81,6 +81,7 @@ def upload_file():
         return send_file(return_data, mimetype='application/{}'.format(secure_filename(files[0].filename),ext),
                         download_name='{}{}'.format('geotagged',ext))
 
+# Start application on PORT 8000
 if __name__ == "__main__":
     application.debug = True
     application.run(port=8000)
