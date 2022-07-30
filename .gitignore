@@ -3,3 +3,4 @@ env/
 local/
 __pycache__/
 geotagged.py
+test.py

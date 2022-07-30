@@ -2,10 +2,10 @@ import os
 import io
 from pkgutil import extend_path
 from helpers.geotag import set_latlng
-from flask import Flask, flash, request, redirect, render_template, send_file
+from flask import Flask, flash, request, redirect, render_template, send_file, jsonify
 from werkzeug.utils import secure_filename
 import shutil
-
+from seoanalyzer import analyze
 
 application = Flask(__name__)
 
@@ -36,6 +36,13 @@ def allowed_file(filename):
 @application.route('/')
 def upload_form():
     return render_template('upload.html')
+
+@application.route('/audit', methods=['POST'])
+def audit():
+    input_json = request.get_json(force=True) 
+    dictToReturn = {'site':input_json['site']}
+    return jsonify(dictToReturn)
+
 
 
 @application.route('/', methods=['POST'])
