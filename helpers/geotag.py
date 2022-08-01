@@ -1,11 +1,8 @@
 import os
 import piexif
 from fractions import Fraction
-from os import listdir
-from os.path import isfile, join
 from geopy import geocoders
-# from geotag import set_gps_location
-gn = geocoders.GeoNames(username='mnguye95')
+gn = geocoders.GeoNames(username='{}'.format(os.environ['GN_USER']))
 
 def to_deg(value, loc):
     """convert decimal coordinates into degrees, munutes and seconds tuple
