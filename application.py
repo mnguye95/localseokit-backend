@@ -1,4 +1,3 @@
-from msilib.schema import Error
 from flask import Flask, flash, request, redirect, render_template, send_file, jsonify
 from werkzeug.utils import secure_filename
 import shutil
@@ -61,8 +60,8 @@ def suggest_idea():
             else:
                 input_json = request.get_json(force=True) 
                 dictToReturn = description(input_json['niche'])
-    except Error:
-        print(Error)
+    except Exception as e:
+        print(e)
     return jsonify(dictToReturn)
 
 # Receives and processes POST request for site auditing
@@ -78,8 +77,8 @@ def audit():
             else:
                 input_json = request.get_json(force=True) 
                 dictToReturn = seo_audit(input_json['url'])
-    except Error:
-        print(Error)
+    except Exception as e:
+        print(e)
     return jsonify(dictToReturn)
 
 # Handles image upload, adds geolocation meta data
