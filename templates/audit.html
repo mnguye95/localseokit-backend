@@ -1,8 +1,7 @@
 <!doctype html>
 <title>Local SEO Kit</title>
-<h1>Local SEO Kit 2022</h1>
-<h2>Select file(s) to upload</h2>
-<h3><a href="/audit">Click here to go audit a site</a></h3>
+<h1>SEO Audit 2022</h1>
+<h2>Enter a website url</h2>
 <p>
 	{% with messages = get_flashed_messages() %}
 	  {% if messages %}
@@ -14,11 +13,10 @@
 	  {% endif %}
 	{% endwith %}
 </p>
-<form method="post" action="/" enctype="multipart/form-data">
+<form method="post" action="/audit">
     <dl>
 		<p>
-			<input type="text" name="city" required>
-			<input type="file" name="files[]" multiple="true" autocomplete="off" required>
+			<input type="text" name="url" required>
 		</p>
     </dl>
     <p>
