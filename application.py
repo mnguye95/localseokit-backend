@@ -1,5 +1,6 @@
 from flask import Flask, flash, request, redirect, render_template, send_file, jsonify
 from werkzeug.utils import secure_filename
+from werkzeug.datastructures import ImmutableMultiDict
 import shutil
 import os
 import io
@@ -8,6 +9,9 @@ from flask_cors import CORS
 from helpers.geotag import set_latlng
 from helpers.audit import seo_audit
 from helpers.suggest import description
+
+from dotenv import load_dotenv
+load_dotenv()
 
 application = Flask(__name__)
 CORS(application)
@@ -82,37 +86,24 @@ def audit():
     return jsonify(dictToReturn)
 
 # Handles image upload, adds geolocation meta data
-@application.route('/geotag', methods=['POST'])
+@application.route('/geotag', methods=['GET', 'POST'])
 def upload_file():
+    file_paths = []
     if request.method == 'POST':
-
-        if 'files[]' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-
-        files = request.files.getlist('files[]')
-        city = request.form.get("city")
-        file_paths = []
-        for file in files:
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file_path = os.path.join(application.config['UPLOAD_FOLDER'], filename)
-                file.save(file_path)
-                file_paths.append(file_path)
-                set_latlng(file_path, city)
-                flash('{} successfully uploaded'.format(file.filename))
-            else:
-                flash('{} is not allowed.'.format(file.filename.rsplit('.', 1)[1].lower()))
-        
+        file = request.files['image']
+        name = file.filename.replace(' ', '')
+        file_path = os.path.join(application.config['UPLOAD_FOLDER'], name)
+        file.save(file_path)
+        set_latlng(file_path, float(request.form['lat']), float(request.form['lng']))
         file_path = ''
         ext = '.jpg'
-        if len(files) > 1: # If multiple files, zip it. Else, leave as JPG
+        if len(request.files) > 1: # If multiple files, zip it. Else, leave as JPG
             shutil.make_archive('geotagged', 'zip', application.config['UPLOAD_FOLDER'])
             file_path = "geotagged.zip"
             ext = '.zip'
         else:
-            file_path = os.path.join(application.config['UPLOAD_FOLDER'], secure_filename(files[0].filename))
-        
+            file_path = os.path.join(application.config['UPLOAD_FOLDER'], secure_filename(name))
+        file_paths.append(file_path)
         # Store the new image in memory then delete the file.
         return_data = io.BytesIO()
         with open(file_path, 'rb') as fo:
@@ -123,7 +114,7 @@ def upload_file():
             os.remove(p)
         
         # Serve the image in memory in response
-        return send_file(return_data, mimetype='application/{}'.format(secure_filename(files[0].filename),ext),
+        return send_file(return_data, mimetype='application/{}'.format(secure_filename(name),ext),
                         download_name='{}{}'.format('geotagged',ext))
 
 # Start application on PORT 8000

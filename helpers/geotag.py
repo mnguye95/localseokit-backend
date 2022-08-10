@@ -2,6 +2,9 @@ import os
 import piexif
 from fractions import Fraction
 from geopy import geocoders
+from dotenv import load_dotenv
+load_dotenv()
+
 gn = geocoders.GeoNames(username='{}'.format(os.environ['GN_USER']))
 
 def to_deg(value, loc):
@@ -70,7 +73,6 @@ def set_gps_location(file_name, lat, lng):
 
     piexif.insert(exif_bytes, file_name)
 
-def set_latlng(path, location): 
-    result = gn.geocode("{}".format(location))
-    print((location, result.latitude, result.longitude))
-    set_gps_location(path, result.latitude, result.longitude)
+def set_latlng(path, lat, lng): 
+    print((lat, lng))
+    set_gps_location(path, lat, lng)
