@@ -84,7 +84,7 @@ def generate_blogs():
     except Exception as e:
         print(e)
     return jsonify(dictToReturn)
-    
+
 # Receives and processes POST request for site auditing
 @application.route('/audit', methods=['POST'])
 def audit():
@@ -137,5 +137,5 @@ def upload_file():
 # Start application on PORT 8000
 if __name__ == "__main__":
     application.debug = True
-    application.run(host='0.0.0.0', port=8000)
-    # application.run(port=8000)
+    # application.run(host='0.0.0.0', port=8000)
+    application.run(port=8000)
