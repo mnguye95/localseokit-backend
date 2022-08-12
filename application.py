@@ -9,6 +9,7 @@ from flask_cors import CORS
 from helpers.geotag import set_latlng
 from helpers.audit import seo_audit
 from helpers.suggest import description
+from helpers.suggest import blog_ideas
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -48,12 +49,12 @@ def upload_form():
 def audit_form():
     return render_template('audit.html')
 
-@application.route('/suggest')
-def suggest_form():
+@application.route('/description')
+def generate_form():
     return render_template('suggest.html')
 
-@application.route('/suggest', methods=['POST'])
-def suggest_idea():
+@application.route('/description', methods=['POST'])
+def generate_idea():
     dictToReturn = {}
     try:
         if request.method == 'POST':
@@ -68,6 +69,22 @@ def suggest_idea():
         print(e)
     return jsonify(dictToReturn)
 
+@application.route('/suggest', methods=['POST'])
+def generate_blogs():
+    dictToReturn = {}
+    try:
+        if request.method == 'POST':
+            if request.form.get("niche"):
+                site = request.form.get("niche")
+                dictToReturn = blog_ideas(site)
+                print(dictToReturn)
+            else:
+                input_json = request.get_json(force=True) 
+                dictToReturn = blog_ideas(input_json['niche'])
+    except Exception as e:
+        print(e)
+    return jsonify(dictToReturn)
+    
 # Receives and processes POST request for site auditing
 @application.route('/audit', methods=['POST'])
 def audit():
