@@ -1,6 +1,6 @@
-from flask import Flask, flash, request, redirect, render_template, send_file, jsonify
+from flask import Flask, request, render_template, send_file, jsonify
 from werkzeug.utils import secure_filename
-from werkzeug.datastructures import ImmutableMultiDict
+from PIL import Image
 import shutil
 import os
 import io
@@ -109,10 +109,23 @@ def upload_file():
     if request.method == 'POST':
         file = request.files['image']
         name = file.filename.replace(' ', '')
-        file_path = os.path.join(application.config['UPLOAD_FOLDER'], name)
-        file.save(file_path)
-        set_latlng(file_path, float(request.form['lat']), float(request.form['lng']))
+        ext = name.split('.')[1]
+        original_image = os.path.join(application.config['UPLOAD_FOLDER'], name)
+        file.save(original_image)
         file_path = ''
+        if not allowed_file(name):
+            if ext == 'png':
+                new_name = name.replace('png', 'jpg')
+                file_path = os.path.join(application.config['UPLOAD_FOLDER'], new_name)
+            else:
+                file_path = original_image
+            image_data = Image.open(original_image)
+            if image_data.mode in ("RGBA", "P"):
+                rgb_im = image_data.convert('RGB')
+            rgb_im.save(file_path)
+        else:
+            file_path = original_image
+        set_latlng(file_path, float(request.form['lat']), float(request.form['lng']))
         ext = '.jpg'
         if len(request.files) > 1: # If multiple files, zip it. Else, leave as JPG
             shutil.make_archive('geotagged', 'zip', application.config['UPLOAD_FOLDER'])
@@ -137,5 +150,5 @@ def upload_file():
 # Start application on PORT 8000
 if __name__ == "__main__":
     application.debug = True
-    # application.run(host='0.0.0.0', port=8000)
-    application.run(port=8000)
+    application.run(host='0.0.0.0', port=8000)
+    # application.run(port=8000)
